@@ -7,6 +7,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.eaglecrk.awarstorm.weather.WeatherModule;
+import com.google.maps.errors.ApiException;
+
+import tk.plogitech.darksky.forecast.ForecastException;
+
+
+
 /**
  * Servlet implementation class WeatherController
  */
@@ -26,16 +33,32 @@ public class WeatherController extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+			
+		request.getRequestDispatcher("/WEB-INF/weather-search.jsp").forward(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+		String loc = request.getParameter("location");
+		WeatherModule w = new WeatherModule();
+		double temp = 0;
+		try {
+			temp = w.getTemperatureF(loc);
+		} catch (ForecastException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		request.setAttribute("location", loc);
+		request.setAttribute("temperature", temp);
+		request.getRequestDispatcher("/WEB-INF/weather-result.jsp").forward(request, response);
 	}
 
 }
